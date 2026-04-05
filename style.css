@@ -632,6 +632,14 @@ section {
 
 .team-info {
     padding: 15px;
+    
+    /* 💡 KUNCI EFEK KACA BURAM (GLASSMORPHISM) */
+    background: rgba(10, 10, 10, 0.5); /* Latar belakang hitam transparan tipis */
+    backdrop-filter: blur(12px); /* Bikin blur/burem objek apapun di belakangnya */
+    -webkit-backdrop-filter: blur(12px); /* Wajib ada untuk dukungan browser iPhone/Safari */
+    
+    /* Garis pemisah halus antara foto dan teks biar makin premium */
+    border-top: 1px solid rgba(255, 255, 255, 0.05); 
 }
 
 .team-info h3 {
