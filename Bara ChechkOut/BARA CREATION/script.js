@@ -1,3 +1,70 @@
+document.addEventListener('DOMContentLoaded', () => {
+
+    // ========================================================
+    // 0. LOADING SCREEN — (SUPER RINGAN, ANTI NGE-HANG)
+    // ========================================================
+    const preloader = document.getElementById('preloader');
+    const loadingBar = document.querySelector('.loading-bar');
+    const loadingNumber = document.querySelector('.loading-number');
+    const loadingText = document.querySelector('.loading-text');
+
+    // Kunci scroll layar saat loading
+    document.body.classList.add('no-scroll');
+
+    const images = Array.from(document.images);
+    const totalAssets = images.length; // Hitung total foto di halaman
+    let loadedAssets = 0; // Mulai dari 0
+
+    // FUNGSI 1: KETIKA SEMUA SELESAI
+    function finishLoading() {
+        if (loadingBar) loadingBar.style.width = '100%';
+        if (loadingNumber) loadingNumber.innerText = '100%';
+        if (loadingText) loadingText.innerText = 'SEMUA SIAP!';
+
+        // Tunggu setengah detik biar animasinya 100% kelihatan, baru hilangkan layar
+        setTimeout(() => {
+            if (preloader) preloader.classList.add('hilang');
+            
+            // Kembalikan fungsi scroll layar
+            setTimeout(() => {
+                document.body.classList.remove('no-scroll');
+            }, 1000);
+        }, 500);
+    }
+
+    // FUNGSI 2: PENGHITUNG PERSENTASE OTOMATIS
+    function updateProgress() {
+        loadedAssets++;
+        // Hitung persentase
+        let percent = Math.floor((loadedAssets / totalAssets) * 100);
+        
+        // Update bar dan angka di layar
+        if (loadingBar) loadingBar.style.width = percent + '%';
+        if (loadingNumber) loadingNumber.innerText = percent + '%';
+
+        // Kalau jumlah yang di-load sudah sama dengan total foto, panggil finishLoading!
+        if (loadedAssets >= totalAssets) {
+            finishLoading();
+        }
+    }
+
+    // JALANKAN MESINNYA:
+    if (totalAssets === 0) {
+        // Kalau kebetulan gak ada foto sama sekali di halaman, langsung selesai
+        finishLoading();
+    } else {
+        // Cek satu-satu fotonya
+        images.forEach(img => {
+            if (img.complete) {
+                updateProgress(); // Kalau foto sudah ke-load (biasanya dari cache)
+            } else {
+                img.addEventListener('load', updateProgress); // Kalau foto baru selesai di-load
+                img.addEventListener('error', updateProgress); // Kalau foto error/gagal, tetap hitung biar gak stuck!
+            }
+        });
+    }
+});
+
 /* ==========================================================================
    HAMBURGER MENU TOGGLE (Khusus HP)
    ========================================================================== */

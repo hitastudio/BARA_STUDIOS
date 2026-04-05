@@ -1,3 +1,72 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const preloader = document.getElementById('preloader');
+    const loadingBar = document.querySelector('.loading-bar');
+    const loadingNumber = document.querySelector('.loading-number');
+    const loadingText = document.querySelector('.loading-text');
+
+    document.body.classList.add('no-scroll');
+
+    const images = Array.from(document.images);
+    const totalAssets = images.length;
+    let loadedAssets = 0;
+    
+    // 💡 KUNCI 1: Variabel penanda apakah loading sudah selesai atau belum
+    let isFinished = false; 
+
+    function finishLoading() {
+        // Kalau sudah selesai (entah karena loading normal atau dipaksa waktu habis), jangan jalan lagi!
+        if (isFinished) return; 
+        isFinished = true;
+
+        if (loadingBar) loadingBar.style.width = '100%';
+        if (loadingNumber) loadingNumber.innerText = '100%';
+        if (loadingText) loadingText.innerText = 'SEMUA SIAP!';
+
+        setTimeout(() => {
+            if (preloader) preloader.classList.add('hilang');
+            setTimeout(() => {
+                document.body.classList.remove('no-scroll');
+            }, 1000);
+        }, 500);
+    }
+
+    // 💡 KUNCI 2: JALUR DARURAT (Maksimal 10 Detik)
+    setTimeout(() => {
+        if (!isFinished) {
+            console.log("Waktu 10 detik habis! Membuka halaman secara paksa...");
+            finishLoading();
+        }
+    }, 10000); // 10000 milidetik = 10 detik
+
+    function updateProgress() {
+        // Kalau layar sudah telanjur dibuka paksa, stop perhitungan
+        if (isFinished) return; 
+
+        loadedAssets++;
+        let percent = Math.floor((loadedAssets / totalAssets) * 100);
+        
+        if (loadingBar) loadingBar.style.width = percent + '%';
+        if (loadingNumber) loadingNumber.innerText = percent + '%';
+        
+        if (loadedAssets >= totalAssets) {
+            finishLoading();
+        }
+    }
+
+    if (totalAssets === 0) {
+        finishLoading();
+    } else {
+        images.forEach(img => {
+            if (img.complete) {
+                updateProgress();
+            } else {
+                img.addEventListener('load', updateProgress);
+                img.addEventListener('error', updateProgress); // Gambar error tetap dihitung jalan
+            }
+        });
+    }
+});
+
 /* ==========================================================================
    HAMBURGER MENU TOGGLE (Animasi X & Dropdown)
    ========================================================================== */
@@ -268,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ========================================================
-// 5. SCRIPT SLIDER VOICE ACTOR (UPDATE: 4 DI HP, 8 DI PC)
+// 5. SCRIPT SLIDER VOICE ACTOR (HP: 2 KARTU/GESER, PC: 8 KARTU)
 // ========================================================
 document.addEventListener('DOMContentLoaded', function () {
     const trackVA = document.getElementById('va-track');
@@ -278,11 +347,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!trackVA) return;
 
-    const slidesVA = trackVA.querySelectorAll('.va-slide');
+    // 💡 KUNCI: Di HP, pecah tiap slide 4 kartu → jadi 2 slide @ 2 kartu
+    if (window.innerWidth <= 768) {
+        const originalSlides = Array.from(trackVA.querySelectorAll('.va-slide'));
+        originalSlides.forEach(slide => {
+            const cards = Array.from(slide.querySelectorAll('.va-card'));
+
+            // Simpan 2 kartu pertama di slide asli
+            const keepGrid = slide.querySelector('.va-grid');
+            while (keepGrid.children.length > 2) {
+                keepGrid.removeChild(keepGrid.lastChild);
+            }
+
+            // Buat slide baru untuk 2 kartu sisanya
+            if (cards.length > 2) {
+                const newSlide = document.createElement('div');
+                newSlide.className = 'va-slide';
+                const newGrid = document.createElement('div');
+                newGrid.className = 'va-grid';
+                cards.slice(2).forEach(card => newGrid.appendChild(card));
+                newSlide.appendChild(newGrid);
+                slide.parentNode.insertBefore(newSlide, slide.nextSibling);
+            }
+        });
+    }
+
+    const slidesVA = Array.from(trackVA.querySelectorAll('.va-slide'));
     const totalSlidesVA = slidesVA.length;
     let currentVA = 0;
 
-    // Deteksi: Buka di HP (1 slide = 4 org) atau PC (2 slide = 8 org)
     function getVAItemsPerPage() {
         return window.innerWidth <= 768 ? 1 : 2;
     }
@@ -290,7 +383,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function setupVADots() {
         dotsContainerVA.innerHTML = '';
         const totalPages = Math.ceil(totalSlidesVA / getVAItemsPerPage());
-        
         for (let i = 0; i < totalPages; i++) {
             const dot = document.createElement('div');
             dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
@@ -302,15 +394,12 @@ document.addEventListener('DOMContentLoaded', function () {
     function goToVA(pageIndex) {
         const itemsPerPage = getVAItemsPerPage();
         const totalPages = Math.ceil(totalSlidesVA / itemsPerPage);
-
         if (pageIndex < 0) pageIndex = totalPages - 1;
         if (pageIndex >= totalPages) pageIndex = 0;
         currentVA = pageIndex;
 
         const slideWidth = slidesVA[0].offsetWidth;
-        const indexToScroll = currentVA * itemsPerPage;
-        
-        trackVA.scrollTo({ left: slideWidth * indexToScroll, behavior: 'smooth' });
+        trackVA.scrollTo({ left: slideWidth * (currentVA * itemsPerPage), behavior: 'smooth' });
 
         dotsContainerVA.querySelectorAll('.slider-dot').forEach((d, i) => {
             d.classList.toggle('active', i === currentVA);
@@ -319,11 +408,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     btnPrevVA.addEventListener('click', () => goToVA(currentVA - 1));
     btnNextVA.addEventListener('click', () => goToVA(currentVA + 1));
-
-    window.addEventListener('resize', () => {
-        setupVADots();
-        goToVA(0);
-    });
-
+    window.addEventListener('resize', () => { setupVADots(); goToVA(0); });
     setupVADots();
 });

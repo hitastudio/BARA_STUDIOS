@@ -5,8 +5,8 @@
    02. HEADER & NAVIGATION             
    03. TRANSISI & BUNGKUS KONTEN       
    04. BERANDA (HERO SECTION) 
-   05. ANIMATION LONG & SHORT & ANIMATION GAME         
-   06. CONTENT CREATOR ANIMATION
+   05. CONTENT: ANIMATION LONG & SHORT & ANIMATION GAME         
+   06. CONTENT: CREATOR ANIMATION
    07. SECTION: INTRO & OUTRO
    08. SECTION: STORYBOARD
    09. SECTION: ARTBOOK
@@ -22,8 +22,142 @@
    ========================================================================== */
 
 /* ==========================================================================
+   00. LOADING SCREEN (PRELOADER)
+   ========================================================================== */
+
+body.no-scroll {
+    overflow: hidden;
+}
+
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--bg-hitam);
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Mencegah Lag saat animasi jalan */
+    will-change: clip-path, opacity; 
+    
+    clip-path: circle(150% at 50% 50%);
+    -webkit-clip-path: circle(150% at 50% 50%);
+    
+    transition: clip-path 1s cubic-bezier(0.77, 0, 0.175, 1), 
+                -webkit-clip-path 1s cubic-bezier(0.77, 0, 0.175, 1), 
+                opacity 1s ease;
+}
+/* Saat class .hilang ditambahkan oleh JavaScript */
+#preloader.hilang {
+    /* Lingkaran menyusut jadi 0% (hilang di tengah) */
+    clip-path: circle(0% at 50% 50%); 
+    -webkit-clip-path: circle(0% at 50% 50%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* --- ISI KONTEN LOADING --- */
+.loader-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loader-logo {
+    font-size: 2.5rem;
+    color: var(--text-light);
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    animation: pulseLogo 1.5s infinite alternate;
+}
+
+.loader-logo span {
+    color: var(--accent-yellow); 
+}
+
+/* Kotak & Garis loading berjalan */
+.loading-bar-container {
+    width: 250px;
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.loading-bar {
+    width: 0%;
+    height: 100%;
+    /* INI BIANG KEROKNYA: Kita ganti jadi Kuning Bara agar senada dengan angkanya */
+    background-color: var(--accent-yellow); 
+    border-radius: 10px;
+    transition: width 0.2s ease-out; 
+}
+
+/* Style untuk Angka Persentase yang baru */
+.loading-number {
+    color: var(--accent-yellow);
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+}
+
+.loading-text {
+    color: #ccc;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: blinkText 1.5s infinite;
+}
+/* Style untuk Gambar Logo di Loading Screen */
+.loading-image-logo {
+    width: 120px; /* Atur seberapa besar gambar logonya di sini */
+    height: auto;
+    margin-bottom: 15px; /* Jarak antara gambar dengan tulisan BARA CREATION */
+    
+    /* Animasi efek detak jantung/glowing */
+    animation: pulseImage 1.5s infinite alternate; 
+}
+
+/* Animasi khusus untuk gambar logo */
+@keyframes pulseImage {
+    0% { 
+        transform: scale(0.9); 
+        opacity: 0.8; 
+    }
+    100% { 
+        transform: scale(1.05); 
+        opacity: 1; 
+        filter: drop-shadow(0 0 15px rgba(255, 176, 0, 0.6)); /* Glowing warna kuning */
+    }
+}
+/* --- EFEK KEDIP & JALAN --- */
+@keyframes pulseLogo {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 15px rgba(255, 176, 0, 0.4); }
+}
+
+@keyframes fillBar {
+    0% { width: 0%; }
+    50% { width: 70%; }
+    100% { width: 100%; }
+}
+
+@keyframes blinkText {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+/* ==========================================================================
    01. VARIABEL & DASAR (BASE)
    ========================================================================== */
+
 :root {
     --bg-hitam: #a40c0c;
     --tema-merah: #4b0000; /* Merah khas Bara Studios */
@@ -37,6 +171,8 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-tap-highlight-color: transparent; /* ← tambahkan ini */
+    outline: none; /* ← tambahkan ini */
 }
 
 body {
@@ -49,6 +185,27 @@ body {
 /* ==========================================================================
    02. HEADER & NAVIGATION
    ========================================================================== */
+   /* Gunting paksa semua elemen (seperti panah slider) yang offside keluar layar */
+.content-wrapper, 
+.hero, 
+footer {
+    width: 100%;
+    overflow-x: hidden !important;
+}
+
+/* ==========================================================================
+   💡 OBAT 2: PERBAIKAN HEADER BIAR NEMPEL TERUS (FIXED)
+   ========================================================================== */
+header {
+    position: fixed !important; /* Memaksa header terbang & nempel, bukan sticky lagi */
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    z-index: 9999 !important; /* Kasta tertinggi biar gak ketutupan foto */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Garis bayangan hitam pemisah */
+}
+
+
 header {
     background-color: var(--bg-hitam);
     padding: 15px 5%;
@@ -415,6 +572,8 @@ html {
 
 /* --- RESPONSIF HP: TOMBOL LAYANAN HERO (VERSI SUPER MUNGIL) --- */
     @media (max-width: 768px) {
+
+        
         .hero-services-grid {
             /* Jarak antar tombol dibikin mepet banget biar muat banyak */
             gap: 4px !important; 
@@ -457,7 +616,7 @@ html {
     }
 
 /* ==========================================================================
-   05. SECTION: SHORT MOVIE & ANIMATION GAME
+   05. CONTENT: ANIMATION LONG & SHORT & ANIMATION GAME   
    ========================================================================== */
 .short-movie-section {
     background-color: transparent; 
@@ -785,8 +944,7 @@ html {
     background-color: #fff;
     transform: scale(1.02);
 }
-/* --- TULISAN KECIL DI BAWAH JUDUL --- */
-/* --- TULISAN KECIL DI BAWAH JUDUL --- */
+
 .section-subtitle {
     text-align: center;
     color: #ffffff;      
@@ -867,16 +1025,30 @@ html {
     margin: 0;
 }
 
-/* Penyesuaian di HP */
+/* --- RESPONSIF HP: POSTER HP JUGA DIGEDEIN --- */
 @media (max-width: 768px) {
+    #animation-game .section-title {
+        margin-bottom: 15px !important;
+    }
+    /* Subtitle portofolio long agak ke bawah */
+    #section-long .section-subtitle {
+        margin-top: 20px !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* Jarak antara long dan short dirapatkan */
+    #section-short {
+        margin-top: 30px !important;
+        padding-top: 30px !important;
+    }
+    #animation-long-short .section-title {
+        font-size: 1.3rem !important;
+        letter-spacing: 1px !important;
+    }
     .game-meta-tags {
         flex-direction: column;
         gap: 5px;
     }
-}
-
-/* --- RESPONSIF HP: POSTER HP JUGA DIGEDEIN --- */
-@media (max-width: 768px) {
     /* 1. PASTIKAN SEMUA KOLOM FULL LEBAR */
     .poster-column, 
     .content-column {
@@ -1036,7 +1208,7 @@ html {
 @media (max-width: 768px) {
     /* 1. KECILIN JUDUL SECTION (BIAR GAK KEGEDEAN DI HP) */
     .section-title {
-        font-size: 1.4rem !important; /* Ukuran pas buat jempol */
+        font-size: 1.1rem !important; /* Ukuran pas buat jempol */
         margin-bottom: 5px !important;
     }
     
@@ -1199,25 +1371,37 @@ html {
 }
 
 /* Responsif HP */
+/* ==========================================================================
+   RESPONSIF HP: INTRO & OUTRO
+   ========================================================================== */
 @media (max-width: 768px) {
     .intro-outro-layout {
-        grid-template-columns: 1fr; /* Kembali ke 1 kolom kalau dibuka di HP */
-        gap: 20px;
+        grid-template-columns: 1fr !important; /* Paksa jadi 1 kolom (video di atas, harga di bawah) */
+        gap: 25px !important; /* Jarak antara video dan kotak harga */
+        
+        /* 💡 KUNCI: Tarik ke atas banget biar nempel sama judul di HP */
+        margin-top: 15px !important; 
+        align-items: center !important; 
     }
+
     .square-video-wrapper {
-        width: 80%; /* Biar di HP nggak terlalu raksasa */
-        margin: 0 auto; /* Tengahin di HP */
+        width: 85% !important; /* Lebar video di HP dibikin pas (gak terlalu raksasa) */
+        margin: 0 auto !important; /* Pastikan posisinya tepat di tengah layar */
     }
+
+    /* Rapikan teks harga di dalam kotak saat di HP */
     .intro-price-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
+        flex-direction: column !important; /* Teks dan harga jadi atas-bawah */
+        align-items: flex-start !important;
+        gap: 5px !important;
+        padding: 10px 5px !important;
     }
+
     .price-highlight {
-        padding-left: 25px; 
+        padding-left: 25px !important; /* Geser harga dikit biar sejajar sama teks di atasnya */
+        margin-top: 2px !important;
     }
 }
-
 /* ==========================================================================
    08. SECTION: STORYBOARD 
    ========================================================================== */
@@ -1924,14 +2108,22 @@ html {
         grid-template-columns: 1fr;
         gap: 25px;
     }
-    
+    #bg-animation .section-title {
+        margin-bottom: 25px !important;
+    }
+    /* SESUDAH */
     .bg-anim-img img { 
-        height: 500px; /* Sesuai kode Mbak */
+        height: auto;
+        width: 100%;
+        object-fit: cover;
     }
 
+    .bg-anim-img {
+        width: 100%;
+    }
     /* 💡 KUNCI: Atur jarak judul khusus di Background Animation */
     #bg-animation .bg-anim-content .sb-subtitle-animatic {
-        margin-top: 40px !important;    /* 💡 Tambah jarak atas biar turun menjauh dari foto */
+        margin-top: 0px !important;    /* 💡 Tambah jarak atas biar turun menjauh dari foto */
         margin-bottom: 10px !important; /* 💡 Kurangi jarak bawah biar nempel ke kotak harga */
     }
 }
@@ -2090,7 +2282,9 @@ html {
         max-width: 85%; /* 💡 Atur angka ini (misal 70% atau 90%) untuk menyesuaikan ukurannya */
         margin: 0 auto; /* 💡 Wajib pakai ini biar gambarnya tetap nengah, nggak minggir ke kiri */
     }
-
+    #scriptwriting .section-title {
+        margin-bottom: 15px !important;
+    }
     .script-layout {
         grid-template-columns: 1fr;
         gap: 20px;
@@ -2137,7 +2331,7 @@ html {
 
     /* 💡 KUNCI: Atur jarak judul khusus di Scriptwriting */
     #scriptwriting .script-content .sb-subtitle-animatic {
-        margin-top: 40px !important;    /* 💡 Tambah jarak atas biar turun menjauh dari foto */
+        margin-top: 5px !important;    /* 💡 Tambah jarak atas biar turun menjauh dari foto */
         margin-bottom: 10px !important; /* 💡 Kurangi jarak bawah biar nempel ke kotak harga */
     }
 }
@@ -2504,13 +2698,14 @@ html {
     scroll-behavior: smooth;
     flex: 1;
     border-radius: 15px;
+    gap: 20px; /* 💡 Ini yang kasih jarak antar foto tengah */
 }
 
 /* Setiap Slide Isinya 100% Layar (Nampung 8 Orang) */
 /* Setiap Slide nampung 4 Orang */
 .va-slide {
-    width: calc(50% - 5px); /* 💡 PC: Menampilkan 2 slide sekaligus (8 orang) */
-    min-width: calc(50% - 5px);
+    width: calc(50% - 15px); /* Dikurangi biar ada ruang untuk gap */
+    min-width: calc(50% - 15px);
     flex-shrink: 0;
     padding: 10px 0;
 }
@@ -2703,76 +2898,107 @@ html {
     filter: brightness(1.3) drop-shadow(0 0 12px rgba(255, 204, 0, 0.8));
 }
 /* ==========================================================================
-   💡 RESPONSIF HP: SECTION VOICE ACTOR
+   💡 RESPONSIF HP: SECTION VOICE ACTOR (VERSI JUMBO & BERSIH)
    ========================================================================== */
 @media (max-width: 768px) {
-    /* 1. SLIDER FOTO TALENT KHUSUS HP */
-    .va-slide {
-        width: 100%; /* 💡 HP: Hanya nampilin 1 slide (4 orang) */
-        min-width: 100%;
-    }
-    /* 1. SLIDER FOTO TALENT: 2 Kolom (4 baris per slide) */
-    .va-grid {
-        grid-template-columns: repeat(2, 1fr) !important; 
-        gap: 12px;
+/* 1. TRIK BIAR KOTAK GAK TERLALU RAKSASA (Ditarik ke dalam) */
+    .va-slider-wrapper {
+        position: relative;
+        display: block !important; 
+        margin: 0 auto !important; /* 💡 KUNCI: Hapus margin negatif sebelumnya */
+        padding: 0 15px !important; /* 💡 KUNCI: Kasih bantalan di pinggir layar HP biar kotak mengecil */
     }
 
-    .va-name { font-size: 0.85rem; }
-    .va-rank { font-size: 0.6rem; }
+    /* Tombol panah melayang disesuaikan ukurannya */
+    #voice-actor .slider-btn {
+        position: absolute !important;
+        top: 40% !important; 
+        z-index: 20 !important;
+    }
+
+    #va-prev { left: -25px !important; } /* Geser tombol panah biar posisinya pas */
+    #va-next { right: -25px !important; }
+
+    /* 2. TRACK & SLIDE */
+    .va-slider-track {
+        width: 100% !important;
+        gap: 0 !important; 
+    }
+
+    .va-slide {
+        width: 100% !important; 
+        min-width: 100% !important;
+        padding: 5px !important;
+    }
+
+    /* 3. KOTAK & GAMBAR (Diperkecil jaraknya) */
+    .va-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important; /* 💡 Jarak antar kotak dirapatkan sedikit biar gak renggang */
+    }
+
+    .va-card {
+        border-radius: 12px !important;
+    }
+
+    .va-card img {
+        aspect-ratio: 3 / 4 !important; 
+        object-fit: cover !important;
+    }
+
+    /* ... (Biarkan kode teks .va-info, .va-name, dan Harga di bawahnya tetap sama) ... */
+    /* 4. TEKS INFO NAMA & RANK DIBESARKAN */
+    .va-info {
+        padding: 10px 5px !important;
+    }
+
+    .va-name {
+        font-size: 0.85rem !important; /* 💡 Teks nama kembali dibesarkan */
+        margin-bottom: 3px !important;
+    }
+
+    .va-rank {
+        font-size: 0.65rem !important;
+        letter-spacing: 0.5px !important;
+    }
 
     /* ==========================================================
-       2. PRICELIST VOICE ACTOR: PAKSA JEJER 2 (2 ATAS, 2 BAWAH)
+       5. PRICELIST VOICE ACTOR (TETAP 2 KOLOM RAPI)
        ========================================================== */
     .va-price-layout {
-        grid-template-columns: repeat(2, 1fr) !important; /* 💡 Ini yang bikin dia jejer 2 di HP */
-        gap: 8px; /* Jarak antar kotak dirapatkan */
-        padding: 0 5px;
+        grid-template-columns: repeat(2, 1fr) !important; 
+        gap: 8px !important; 
+        padding: 0 5px !important;
     }
 
-    /* 💡 KARTU HARGA: Semua ukuran dipress biar muat 2 kolom di HP */
     .va-price-card {
-        padding: 12px 10px; /* Ruang dalam dikurangi banget */
-        border-radius: 12px;
-        gap: 8px;
+        padding: 12px 10px !important; 
+        border-radius: 12px !important;
+        gap: 8px !important;
     }
 
-    /* Judul Paket dikecilin */
     .va-tier-badge {
-        font-size: 0.55rem;
-        letter-spacing: 1px;
-        padding: 4px 8px;
-        margin-bottom: 2px;
+        font-size: 0.55rem !important;
+        letter-spacing: 1px !important;
+        padding: 4px 8px !important;
+        margin-bottom: 2px !important;
     }
 
-    /* Harga Utama dikecilin */
     .va-price-main {
-        font-size: 0.95rem; 
-        margin-bottom: 8px;
-        padding-bottom: 8px;
-        line-height: 1.2;
+        font-size: 0.95rem !important; 
+        margin-bottom: 8px !important;
+        padding-bottom: 8px !important;
+        line-height: 1.2 !important;
     }
 
-    /* Teks / Project dikecilin */
     .va-price-main span {
-        font-size: 0.55rem;
-        margin-top: 3px;
+        font-size: 0.55rem !important;
+        margin-top: 3px !important;
     }
 
-    /* List Fitur dirapatkan dan dikecilin */
-    .va-feature-list {
-        gap: 6px;
-    }
-
-    .va-feature-list li {
-        font-size: 0.55rem; /* Teks dibikin super mini biar muat */
-        gap: 5px;
-        line-height: 1.3;
-    }
-
-    .va-feature-list li i {
-        font-size: 0.5rem;
-        margin-top: 2px;
-    }
+    .va-feature-list { gap: 6px !important; }
+    .va-feature-list li { font-size: 0.55rem !important; gap: 5px !important; line-height: 1.3 !important; }
+    .va-feature-list li i { font-size: 0.5rem !important; margin-top: 2px !important; }
 }
 
 /* ==========================================================================
@@ -2874,22 +3100,46 @@ html {
     text-shadow: 0 0 15px rgba(255, 204, 0, 0.3); /* Efek glow tipis biar elegan */
 }
 /* --- RESPONSIF KONTAK (HP) --- */
-@media (max-width: 768px) {
+
+/* --- RESPONSIF HP: KONTAK --- */
+@media (max-width: 600px) {
     #kontak {
-        padding: 60px 15px;
+        padding: 60px 10px; /* Kurangi padding kiri-kanan */
+    }
+    
+    .kontak-konten p {
+        font-size: 1rem;
     }
 
+    /* 💡 KUNCI BIAR TETAP SAMPING-SAMPINGAN */
     .kontak-buttons {
-        flex-direction: column;
-        align-items: center;
+        flex-wrap: nowrap; /* Jangan turun ke baris baru */
+        gap: 10px; /* Jarak antar tombol didekatkan */
     }
 
     .kontak-buttons .btn {
-        width: 100%;
-        max-width: 320px;
+        width: 50%; /* Masing-masing ambil setengah layar */
+        min-width: unset;
+        padding: 12px 10px; /* Kurangi area dalam tombol */
+    }
+
+    .kontak-buttons .btn i {
+        font-size: 1.5rem; /* Kecilkan ikon */
+        margin-right: 8px;
+    }
+
+    .kontak-buttons .btn span {
+        font-size: 0.8rem; /* Kecilkan teks utama (WhatsApp/Email) */
+    }
+
+    .kontak-buttons .btn small {
+        font-size: 0.6rem; /* Kecilkan detail (nomor/email) */
+        /* Potong teks jika kepanjangan pakai titik-titik (...) */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
-
 
 /* ==========================================================================
    16. SECTION: MY PROJECTS
@@ -2900,7 +3150,7 @@ html {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 25px;
-    margin-top: 30px;
+    margin-top: -20px;
 }
 
 /* Kartu Proyek */
@@ -2961,12 +3211,15 @@ html {
 
 
 /* --- RESPONSIF PROJECT (HP: TETAP 2 KOLOM RAPI) --- */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+
+    
     .project-grid {
         /* 💡 KUNCI: Paksa jadi 2 kolom agar total ada 4 baris */
-        grid-template-columns: repeat(4, 1fr) !important; 
+        grid-template-columns: repeat(2, 1fr) !important; 
         gap: 10px; /* Jarak antar kotak dirapatkan */
         padding: 0 5px;
+        margin-top: -10px; 
     }
 
     .project-card {
@@ -2978,7 +3231,7 @@ html {
     }
 
     .project-info h3 {
-        font-size: 0.75rem; /* Judul dikecilkan agar tidak makan tempat */
+        font-size: 0.5rem; /* Judul dikecilkan agar tidak makan tempat */
         margin-bottom: 5px;
         line-height: 1.2;
     }
@@ -3048,73 +3301,75 @@ footer {
    ========================================================================== */
 @media (max-width: 768px) {
     .social-links {
-        display: flex;
-        flex-wrap: nowrap;      /* KUNCI: Melarang ikon turun ke bawah */
-        justify-content: center; /* Tetap di tengah */
-        gap: 5px;               /* Jarak antar kotak dipersempit */
+        display: flex !important;
+        flex-wrap: nowrap !important; /* 💡 KUNCI MUTLAK: Paksa 1 baris, pantang turun! */
+        justify-content: center;
+        gap: 4px !important; /* Jarak antar kotak super dirapatkan */
+        padding: 0 5px;
         width: 100%;
-        overflow: hidden;        /* Biar gak ada scroll samping */
+        overflow: hidden; /* Jaga-jaga biar gak bikin layar bisa digeser ke samping */
     }
 
     .social-links a {
-        padding: 6px 8px;       /* Padding kotak dibuat sangat ramping */
-        gap: 5px;               /* Jarak ikon ke teks diperkecil */
-        flex: 1;                /* Membagi ruang sama rata */
-        min-width: 0;           /* Izin untuk mengecil sesempit mungkin */
-        white-space: nowrap;    /* Teks dipaksa lurus, gak boleh enter */
+        padding: 6px 4px !important; /* Bantalan kotak dibikin sangat ramping */
+        gap: 3px !important; /* Ikon dan teks mepet banget */
+        flex: 1; /* Lebar layar dibagi rata berempat */
+        justify-content: center;
+        min-width: 0; /* 💡 KUNCI: Izinkan kotak mengecil melewati batas normalnya */
+        border-radius: 8px !important; /* Lengkungan kotak disesuaikan ukurannya */
     }
 
     .social-links a i {
-        font-size: 1rem;        /* Ikon dikecilkan agar muat */
+        font-size: 0.85rem !important; /* Ikon disusutkan jadi mini */
+        margin: 0 !important;
     }
 
     .social-links a span {
-        font-size: 0.65rem;     /* Teks dikecilkan drastis agar cukup 1 baris */
-        letter-spacing: -0.2px; /* Merapatkan huruf sedikit */
+        display: inline-block !important; /* Paksa teks tetap muncul (membatalkan kode hide sebelumnya) */
+        font-size: 0.5rem !important; /* Teks dibikin ukuran "semut" biar muat */
+        white-space: nowrap !important; /* Teks sama sekali tidak boleh turun baris */
+        letter-spacing: -0.3px !important; /* Jarak antar huruf dirapatkan sedikit */
+        overflow: hidden;
+        text-overflow: clip; /* Kalau layar terlalu ekstrem sempitnya, teks kepotong natural, bukan titik-titik */
     }
-}
 
+    .social-links a:hover {
+        transform: none !important; 
+    }
+
+    /* 💡 KUNCI: Gunakan efek :active (saat ditekan jari) untuk HP */
+    .social-links a:active {
+        transform: scale(0.92) !important; /* Tombol mengecil sedikit pas ditekan, ngasih kesan "membal" */
+        background-color: var(--accent-yellow) !important; /* Latar langsung kuning */
+        color: #111 !important; /* Teks/Ikon jadi hitam biar kontras */
+        border-color: var(--accent-yellow) !important;
+        transition: transform 0.1s ease !important; /* Transisi dipercepat biar responsif di jari */
+    }
+
+    /* ... kode social-links a:active yang tadi ... */
+    .social-links a:active {
+        transform: scale(0.92) !important; 
+        background-color: var(--accent-yellow) !important; 
+        color: #111 !important; 
+        border-color: var(--accent-yellow) !important;
+        transition: transform 0.1s ease !important; 
+    }
+
+    /* 💡 KECILKAN TULISAN COPYRIGHT DI HP */
+    footer p {
+        font-size: 0.65rem !important; 
+        opacity: 0.8; 
+        margin-top: 15px !important; 
+        letter-spacing: 0.5px;
+    }
+} /* <--- Ini kurung tutupnya @media (max-width: 768px) */
 
 /* ==========================================================================
-   07. MEDIA QUERIES (RESPONSIF HP)
+   💡 OBAT 1: ANTI BOCOR SCROLL SAMPING
    ========================================================================== */
-@media (max-width: 768px) {
-    header { 
-        padding: 10px 3%; 
-    }
-    .btn-back { 
-        font-size: 0.7rem; 
-        gap: 5px; 
-    }
-    nav ul { 
-        display: none; 
-    }
-
-    .hero { 
-        height: auto; 
-        min-height: 100vh; 
-        padding: 120px 20px 60px 20px; 
-    }
-    .hero-logo { 
-        max-width: 230px; 
-        margin-bottom: 10px; 
-    }
-    .hero p { 
-        font-size: 0.95rem; 
-        margin: 10px auto 20px auto; 
-    }
-    
-    /* Tombol Hero di HP */
-    .hero-services-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 Kolom di HP */
-        gap: 10px;
-        padding: 0 10px;
-    }
-    .btn-white-mode {
-        max-width: 100%;
-        padding: 10px !important;
-    }
-    .btn-white-mode span {
-        font-size: 0.75rem !important;
-    }
+html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important;
 }
+

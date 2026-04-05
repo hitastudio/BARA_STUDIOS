@@ -22,6 +22,139 @@
 
 
 /* ==========================================================================
+   00. LOADING SCREEN (PRELOADER)
+   ========================================================================== */
+
+body.no-scroll {
+    overflow: hidden;
+}
+
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--bg-hitam);
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Mencegah Lag saat animasi jalan */
+    will-change: clip-path, opacity; 
+    
+    clip-path: circle(150% at 50% 50%);
+    -webkit-clip-path: circle(150% at 50% 50%);
+    
+    transition: clip-path 1s cubic-bezier(0.77, 0, 0.175, 1), 
+                -webkit-clip-path 1s cubic-bezier(0.77, 0, 0.175, 1), 
+                opacity 1s ease;
+}
+/* Saat class .hilang ditambahkan oleh JavaScript */
+#preloader.hilang {
+    /* Lingkaran menyusut jadi 0% (hilang di tengah) */
+    clip-path: circle(0% at 50% 50%); 
+    -webkit-clip-path: circle(0% at 50% 50%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* --- ISI KONTEN LOADING --- */
+.loader-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loader-logo {
+    font-size: 2.5rem;
+    color: var(--text-light);
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    animation: pulseLogo 1.5s infinite alternate;
+}
+
+.loader-logo span {
+    color: var(--accent-yellow); 
+}
+
+/* Kotak & Garis loading berjalan */
+.loading-bar-container {
+    width: 250px;
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.loading-bar {
+    width: 0%;
+    height: 100%;
+    /* INI BIANG KEROKNYA: Kita ganti jadi Kuning Bara agar senada dengan angkanya */
+    background-color: var(--accent-yellow); 
+    border-radius: 10px;
+    transition: width 0.2s ease-out; 
+}
+
+/* Style untuk Angka Persentase yang baru */
+.loading-number {
+    color: var(--accent-yellow);
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+}
+
+.loading-text {
+    color: #000000;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: blinkText 1.5s infinite;
+}
+/* Style untuk Gambar Logo di Loading Screen */
+.loading-image-logo {
+    width: 120px; /* Atur seberapa besar gambar logonya di sini */
+    height: auto;
+    margin-bottom: 15px; /* Jarak antara gambar dengan tulisan BARA CREATION */
+    
+    /* Animasi efek detak jantung/glowing */
+    animation: pulseImage 1.5s infinite alternate; 
+}
+
+/* Animasi khusus untuk gambar logo */
+@keyframes pulseImage {
+    0% { 
+        transform: scale(0.9); 
+        opacity: 0.8; 
+    }
+    100% { 
+        transform: scale(1.05); 
+        opacity: 1; 
+        filter: drop-shadow(0 0 15px rgba(255, 176, 0, 0.6)); /* Glowing warna kuning */
+    }
+}
+/* --- EFEK KEDIP & JALAN --- */
+@keyframes pulseLogo {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 15px rgba(255, 176, 0, 0.4); }
+}
+
+@keyframes fillBar {
+    0% { width: 0%; }
+    50% { width: 70%; }
+    100% { width: 100%; }
+}
+
+@keyframes blinkText {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+/* ==========================================================================
    01. VARIABEL WARNA & DASAR
    ========================================================================== */
 /* --- ANIMASI MELUNCUR SAAT TOMBOL DIKLIK --- */
@@ -44,13 +177,15 @@ html {
     --merah-maroon: #990000;
 }
 
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-tap-highlight-color: transparent; /* ← tambahkan ini */
+    outline: none; /* ← tambahkan ini */
 }
-
 body {
     background-color: var(--bg-hitam);
     color: var(--text-light);
@@ -61,6 +196,11 @@ body {
 /* ==========================================================================
    02. HEADER & NAVIGATION
    ========================================================================== */
+
+.content-wrapper section {
+    position: relative;
+    z-index: 2; /* ← section selalu di atas ikon melayang */
+}
 header {
     background-color: var(--bg-hitam);
     padding: 15px 5%;
@@ -409,14 +549,14 @@ nav ul li a:hover {
 }
 
 /* --- STYLING IKON MELAYANG --- */
+/* SESUDAH */
 .bg-icon {
     position: absolute;
     color: #ffffff; 
     opacity: 1;
-    z-index: 1; 
     pointer-events: none; 
     transition: all ease-in-out;
-    z-index: 1; /* 💡 KUNCI: Paling bawah */
+    z-index: 0; /* ← turunkan ke 0 */
 }
 
 /* Judul Section di Area Kuning */
@@ -1070,8 +1210,8 @@ nav ul li a:hover {
     #ilustrasi .section-title::after { width: 150px; }
     
     /* Ukuran Slider di HP */
-    .ilustrasi-slider-wrapper { height: 350px; }
-    .ilustrasi-slide { width: 220px; height: 310px; }
+    .ilustrasi-slider-wrapper { height: 130px; }
+    .ilustrasi-slide { width: 210px; height: 310px; }
     
     /* Tombol Slider HP */
     .ilustrasi-nav-btn { width: 45px; }
@@ -1089,9 +1229,10 @@ nav ul li a:hover {
 
 /* ==========================================================================
    07. SECTION: MASCOT
-   ========================================================================== */
+   ========================================================================== */    
 
 #mascot {
+
     position: relative;
     z-index: 10;
     max-width: 1200px;
@@ -1177,6 +1318,14 @@ nav ul li a:hover {
    📱 RESPONSIF HP: MASCOT
    ================================== */
 @media (max-width: 768px) {
+
+    #mascot {
+        margin-top: 20px; /* kurangi jarak atas section */
+    }
+
+    #mascot .section-title {
+        margin-bottom: 15px; /* kurangi jarak judul ke gambar */
+    }
     #mascot .section-title {
         font-size: 2.8rem;
     }
@@ -1458,8 +1607,14 @@ nav ul li a:hover {
 @media (max-width: 768px) {
     #logo .section-title { font-size: 2.8rem; }
     #logo .section-title::after { width: 150px; }
-    .logo-slider-wrapper { height: 260px; }
-    .logo-slide { width: 200px; height: 200px; }
+    .logo-slider-wrapper { 
+        height: 120px;
+        overflow: visible; /* biar slide kiri kanan tidak terpotong */
+    }
+    .logo-slide { 
+        width: 260px; 
+        height: 160px; 
+    }
     
     /* Di HP Kartu Balik Atas-Bawah */
     #logo .comic-card-header { flex-direction: column; align-items: flex-start; gap: 8px; }
@@ -1675,6 +1830,19 @@ nav ul li a:hover {
     transform: translateY(-3px);
 }
 @media (max-width: 768px) {
+
+    #poster .section-title {
+        font-size: 2.8rem;
+        margin-bottom: 15px; /* kurangi jarak judul ke gambar */
+    }
+
+    .poster-container {
+        gap: 15px; /* kurangi jarak antara gambar dan kartu harga */
+    }
+
+    .poster-image-wrapper {
+        min-height: unset; /* hapus minimum tinggi biar gak ada ruang kosong */
+    }
     /* --- Responsif Poster HP --- */
     .poster-container {
         flex-direction: column; /* Gambar di atas, Teks di bawah */
@@ -1888,9 +2056,13 @@ nav ul li a:hover {
     box-shadow: 0 15px 30px rgba(255, 234, 0, 0.4); 
 }
 @media (max-width: 768px) {
-    /* --- Responsif Infografis HP (Tetap 3 Kolom) --- */
+    .infografis-header-image {
+    margin: 0 auto 30px auto; /* kurangi jarak bawah ke kartu paket */
+    }
+
     #infografis .section-title {
-        font-size: 2.2rem; /* Kecilin judul section */
+        font-size: 2.2rem;
+        margin-bottom: 15px; /* kurangi jarak bawah judul ke gambar */
     }
 
     .pricing-grid-premium {
@@ -1902,11 +2074,6 @@ nav ul li a:hover {
     .pricing-card-gold {
         padding: 25px 8px 0 8px; /* Padding dalam dipersempit */
         border-radius: 10px;
-    }
-
-    .pricing-card-gold.pro-card {
-        transform: scale(1.05); /* Skala kartu tengah dikecilkan dikit biar gak tabrakan */
-        z-index: 5;
     }
 
     /* Kecilin Nama Paket */
@@ -2072,8 +2239,8 @@ nav ul li a:hover {
 
 /* --- RESPONSIP HP (3 KOLOM KECIL) --- */
 @media (max-width: 768px) {
-    .picto-slider-wrapper { height: 180px; }
-    .picto-slide { width: 260px; height: 260px; }
+    .picto-slider-wrapper { height: 110px; }
+    .picto-slide { width: 185px; height: 260px; }
     .picto-nav-btn { width: 40px; }
     .picto-nav-btn.next-btn { right: 5px; }
     .picto-nav-btn.prev-btn { left: 5px; }
@@ -2146,14 +2313,11 @@ nav ul li a:hover {
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* SESUDAH */
 .ppt-slide img {
     width: 100%; 
     height: 100%; 
-    
-    /* 💡 KUNCI: 'fill' akan memaksa gambar memenuhi seluruh kotak 
-       tanpa ada sisa ruang (space) sama sekali */
-    object-fit: fill; 
-    
+    object-fit: contain; 
     filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
 }
 /* --- EFEK GLOW SAAT HOVER PANAH PPT --- */
@@ -2363,8 +2527,8 @@ nav ul li a:hover {
     .addon-text { font-size: 0.5rem; }
 
     /* 7. Settingan Slider PPT di HP */
-    .ppt-slider-wrapper { height: 180px; }
-    .ppt-slide { width: 260px; height: 146px; }
+    .ppt-slider-wrapper { height: 140px; }
+    .ppt-slide { width: 205px; height: 120px; }
     .ppt-nav-btn { width: 35px; }
     .ppt-nav-btn.next-btn { right: 0px; }
     .ppt-nav-btn.prev-btn { left: 0px; }
@@ -2504,41 +2668,6 @@ nav ul li a:hover {
 }
 
 
-/* ==================================================
-   RESPONSIF HP (Tetap 2 Kolom & Tombol Muncul)
-   ================================================== */
-@media (max-width: 768px) {
-    #desain-brosur .section-title { font-size: 1.8rem; }
-    .brosur-slider-wrapper { height: 350px; }
-    .brosur-slide { width: 220px; height: 160px; } /* Sesuaikan agar tidak kepotong */
-    
-    .brosur-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 20px 5px 0 5px; }
-    .brosur-card-header { padding: 15px 5px; }
-    .brosur-card-header h4 { font-size: 0.75rem; }
-    .brosur-price { font-size: 0.85rem; white-space: nowrap; }
-    .brosur-price span { font-size: 0.5rem; }
-    
-    .brosur-body { padding: 10px 5px; }
-    .brosur-features li { font-size: 0.55rem; margin-bottom: 4px; line-height: 1.2; }
-    .brosur-features li i { font-size: 0.6rem; margin-right: 3px; }
-    
-    .pkg-badge { font-size: 0.55rem; padding: 4px 10px; top: -10px; }
-
-    /* Setting Tombol Geser di HP */
-    .brosur-nav-btn { width: 45px; z-index: 100; }
-    .brosur-nav-btn.next-btn { right: 5px !important; }
-    .brosur-nav-btn.prev-btn { left: 5px !important; }
-
-    /* Kecilkan jarak nendang animasi di HP */
-    @keyframes idleKanan {
-        0%, 100% { transform: translateY(-50%) translateX(0); }
-        50% { transform: translateY(-50%) translateX(5px); }
-    }
-    @keyframes idleKiri {
-        0%, 100% { transform: translateY(-50%) translateX(0); }
-        50% { transform: translateY(-50%) translateX(-5px); }
-    }
-}
 
 /* --- KARTU HARGA BROSUR --- */
 .brosur-grid {
@@ -2600,7 +2729,7 @@ nav ul li a:hover {
 
 /* Responsif HP (Tetap 2 Kolom) */
 @media (max-width: 768px) {
-    #desain-brosur .section-title { font-size: 1.8rem; }
+    #desain-brosur .section-title { font-size: 1.6rem; }
     
     .brosur-grid { 
         grid-template-columns: repeat(2, 1fr); 
@@ -2633,8 +2762,8 @@ nav ul li a:hover {
     }
 
     /* Slider Brosur di HP */
-    .brosur-slider-wrapper { height: 180px; }
-    .brosur-slide { width: 260px; height: 200px; } /* Sesuaikan rasio agar tidak kepotong */
+    .brosur-slider-wrapper { height: 140px; }
+    .brosur-slide { width: 185px; height: 140px; } /* Sesuaikan rasio agar tidak kepotong */
 
 /* 💡 KUNCI BIAR TOMBOL MUNCUL LAGI DI HP */
     .brosur-nav-btn { 
@@ -2784,11 +2913,11 @@ nav ul li a:hover {
 /* --- RESPONSIF HP --- */
 /* --- RESPONSIF HP MOCK UP (PAKSA 3 KOLOM SEJAJAR) --- */
 @media (max-width: 768px) {
-    #mock-up .section-title { font-size: 1.8rem; }
+    #mock-up .section-title { font-size: 1.4rem; }
     
     /* Slider Mockup HP */
-    .mockup-slider-wrapper { height: 180px; }
-    .mockup-slide { width: 300px; height: 200px; }
+    .mockup-slider-wrapper { height: 130px; }
+    .mockup-slide { width: 220px; height: 150px; }
     .mockup-nav-btn { width: 45px; z-index: 100;}
     .mockup-nav-btn.next-btn { right: -20px !important; }
     .mockup-nav-btn.prev-btn { left: -20px !important; }
@@ -2962,20 +3091,56 @@ nav ul li a:hover {
 }
 /* Responsif HP */
 @media (max-width: 600px) {
-    #kontak {
-        padding: 60px 15px;
-    }
-    
-    .kontak-buttons .btn {
-        width: 100%; /* Tombol jadi full lebar di HP */
-        min-width: unset;
+    /* 💡 KECILKAN JUDUL KONTAK DI HP */
+    #kontak .section-title {
+        font-size: 1.6rem !important; /* Susutkan dari 3rem */
+        letter-spacing: 2px !important;
+        margin-bottom: 25px !important; /* Kurangi jarak bawah */
     }
 
+    /* 💡 KECILKAN GARIS KUNING DI BAWAH JUDUL BIAR SEIMBANG */
+    #kontak .section-title::after {
+        width: 150px !important; /* Susutkan dari 250px */
+        height: 4px !important; /* Garis lebih tipis */
+        margin-top: 8px !important;
+    }
+    #kontak {
+        padding: 60px 10px; /* Kurangi padding kiri-kanan */
+    }
+    
     .kontak-konten p {
         font-size: 1rem;
     }
-}
 
+    /* 💡 KUNCI BIAR TETAP SAMPING-SAMPINGAN */
+    .kontak-buttons {
+        flex-wrap: nowrap; /* Jangan turun ke baris baru */
+        gap: 10px; /* Jarak antar tombol didekatkan */
+    }
+
+    .kontak-buttons .btn {
+        width: 50%; /* Masing-masing ambil setengah layar */
+        min-width: unset;
+        padding: 12px 10px; /* Kurangi area dalam tombol */
+    }
+
+    .kontak-buttons .btn i {
+        font-size: 1.5rem; /* Kecilkan ikon */
+        margin-right: 8px;
+    }
+
+    .kontak-buttons .btn span {
+        font-size: 0.8rem; /* Kecilkan teks utama (WhatsApp/Email) */
+    }
+
+    .kontak-buttons .btn small {
+        font-size: 0.6rem; /* Kecilkan detail (nomor/email) */
+        /* Potong teks jika kepanjangan pakai titik-titik (...) */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
 /* ==========================================================================
    16. FOOTER
    ========================================================================== */
@@ -3035,32 +3200,68 @@ footer {
    ========================================================================== */
 @media (max-width: 768px) {
     .social-links {
-        display: flex;
-        flex-wrap: nowrap;      /* KUNCI: Melarang ikon turun ke bawah */
-        justify-content: center; /* Tetap di tengah */
-        gap: 5px;               /* Jarak antar kotak dipersempit */
+        display: flex !important;
+        flex-wrap: nowrap !important; /* 💡 KUNCI MUTLAK: Paksa 1 baris, pantang turun! */
+        justify-content: center;
+        gap: 4px !important; /* Jarak antar kotak super dirapatkan */
+        padding: 0 5px;
         width: 100%;
-        overflow: hidden;        /* Biar gak ada scroll samping */
+        overflow: hidden; /* Jaga-jaga biar gak bikin layar bisa digeser ke samping */
     }
 
     .social-links a {
-        padding: 6px 8px;       /* Padding kotak dibuat sangat ramping */
-        gap: 5px;               /* Jarak ikon ke teks diperkecil */
-        flex: 1;                /* Membagi ruang sama rata */
-        min-width: 0;           /* Izin untuk mengecil sesempit mungkin */
-        white-space: nowrap;    /* Teks dipaksa lurus, gak boleh enter */
+        padding: 6px 4px !important; /* Bantalan kotak dibikin sangat ramping */
+        gap: 3px !important; /* Ikon dan teks mepet banget */
+        flex: 1; /* Lebar layar dibagi rata berempat */
+        justify-content: center;
+        min-width: 0; /* 💡 KUNCI: Izinkan kotak mengecil melewati batas normalnya */
+        border-radius: 8px !important; /* Lengkungan kotak disesuaikan ukurannya */
     }
 
     .social-links a i {
-        font-size: 1rem;        /* Ikon dikecilkan agar muat */
+        font-size: 0.85rem !important; /* Ikon disusutkan jadi mini */
+        margin: 0 !important;
     }
 
     .social-links a span {
-        font-size: 0.65rem;     /* Teks dikecilkan drastis agar cukup 1 baris */
-        letter-spacing: -0.2px; /* Merapatkan huruf sedikit */
+        display: inline-block !important; /* Paksa teks tetap muncul (membatalkan kode hide sebelumnya) */
+        font-size: 0.5rem !important; /* Teks dibikin ukuran "semut" biar muat */
+        white-space: nowrap !important; /* Teks sama sekali tidak boleh turun baris */
+        letter-spacing: -0.3px !important; /* Jarak antar huruf dirapatkan sedikit */
+        overflow: hidden;
+        text-overflow: clip; /* Kalau layar terlalu ekstrem sempitnya, teks kepotong natural, bukan titik-titik */
     }
-}
 
+    .social-links a:hover {
+        transform: none !important; 
+    }
+
+    /* 💡 KUNCI: Gunakan efek :active (saat ditekan jari) untuk HP */
+    .social-links a:active {
+        transform: scale(0.92) !important; /* Tombol mengecil sedikit pas ditekan, ngasih kesan "membal" */
+        background-color: var(--accent-yellow) !important; /* Latar langsung kuning */
+        color: #111 !important; /* Teks/Ikon jadi hitam biar kontras */
+        border-color: var(--accent-yellow) !important;
+        transition: transform 0.1s ease !important; /* Transisi dipercepat biar responsif di jari */
+    }
+
+    /* ... kode social-links a:active yang tadi ... */
+    .social-links a:active {
+        transform: scale(0.92) !important; 
+        background-color: var(--accent-yellow) !important; 
+        color: #111 !important; 
+        border-color: var(--accent-yellow) !important;
+        transition: transform 0.1s ease !important; 
+    }
+
+    /* 💡 KECILKAN TULISAN COPYRIGHT DI HP */
+    footer p {
+        font-size: 0.65rem !important; 
+        opacity: 0.8; 
+        margin-top: 15px !important; 
+        letter-spacing: 0.5px;
+    }
+} /* <--- Ini kurung tutupnya @media (max-width: 768px) */
 
 
 /* ==========================================================================

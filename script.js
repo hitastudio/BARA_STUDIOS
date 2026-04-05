@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const distance = Math.abs(containerCenter - imgCenter);
 
             // Jika jarak logo ke tengah kurang dari 80px
-            if (distance < 80) {
+            if (distance < 55) {
                 img.classList.add('pop-out'); // Tambahkan efek membesar
             } else {
                 img.classList.remove('pop-out'); // Kembalikan ke ukuran normal
