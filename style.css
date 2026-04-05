@@ -340,6 +340,11 @@ nav ul li a:hover {
     .marquee-track:hover {
         animation-play-state: running !important; 
     }
+
+    .hero p {
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
 }
 /* ==========================================================================
    04. TRANSISI & BUNGKUS KONTEN (CONTENT WRAPPER)
@@ -545,7 +550,7 @@ section {
 @media (max-width: 768px) {
     .portfolio-grid { gap: 8px; }
     .card-content { padding: 8px; }
-    .card-content h3 { font-size: 1rem; margin-bottom: 2px; }
+    .card-content h3 { font-size: 1.1rem; margin-bottom: 2px; }
     .card-content p.desc { font-size: 0.65rem; line-height: 1.2; }
     .card-img { font-size: 0.7rem; }
     .tentang-Sub p { font-size: 0.9rem; } /* ← tambah ini */
